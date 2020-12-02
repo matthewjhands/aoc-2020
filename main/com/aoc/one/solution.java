@@ -38,9 +38,7 @@ class Solution {
                 }
                 if (!foundTriple) {
                     for (Integer c : expenses) {
-                        if (foundPair && foundTriple) {
-                            System.exit(0);
-                        } else if (a + b + c == 2020) {
+                        if (a + b + c == 2020) {
                             System.err.println("Part Two");
                             System.err.println(a + " + " + b + " + " + c + " = 2020");
                             System.err.println(a + " * " + b + " * " + c + " = " + (a * b * c));
@@ -48,6 +46,9 @@ class Solution {
                             break;
                         }
                     }
+                } 
+                if (foundTriple && foundPair) {
+                    System.exit(0);
                 }
             }
         }
