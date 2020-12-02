@@ -4,7 +4,7 @@ This is my attempt at the [Advent of Code 2020 Challenge](https://adventofcode.c
 
 ## Measuring solution performance using Powershell
 
-You can use `Measure-Command` as a tool similar to Unix's `time` to measure how long a solution takes to execute.
+You can use `Measure-Command` as a tool similar to Unix's `time` command to measure how long a solution takes to execute.
 
 ``` powershell
 Measure-Command { java path\to\solution.java | Out-Default }
