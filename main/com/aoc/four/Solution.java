@@ -1,42 +1,52 @@
 package main.com.aoc.four;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Scanner;
+import java.util.HashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 class Solution {
+    private static final String INPUT_FILE = "main/com/aoc/four/input.txt";
+    private static final Pattern heightFormat = Pattern.compile("^(\\d+)(cm|in)$");
+    private static final Pattern validHairFormat = Pattern.compile("^#\\w{6}$");
+    private static final Pattern validPassportID = Pattern.compile("^\\d{9}$");
+    private static final HashSet<String> validEyeColours = new HashSet<>(
+            Arrays.asList("amb", "blu", "brn", "gry", "grn", "hzl", "oth"));
 
-    public static void main(String[] args) throws FileNotFoundException {
-        final String INPUT_FILE = "main/com/aoc/four/input.txt";
-
-        File inputFile = new File(INPUT_FILE);
-        Scanner reader;
-        reader = new Scanner(inputFile);
-
-        ArrayList<HashMap<String, String>> passports = new ArrayList<>();
-        ArrayList<String> passportAttributes = new ArrayList<>();
-        
-        String input = "";
-        while (reader.hasNextLine()) {
-            // load file, split attribute groups into ArrayList
-            String line = reader.nextLine();
-            // apparently split() won't neccessarily return matches in the order
-            //   they appear in the string, hence more complicated split logic..
-            if (line.isEmpty()){
-                passportAttributes.add(input.trim());
-                input = "";
-                continue;
+    public static boolean isValidHeight(String height) {
+        if (!heightFormat.matcher(height).matches()) {
+            return false;
+        } else {
+            Matcher m = heightFormat.matcher(height);
+            m.find();
+            switch ((String) m.group(2)) {
+                case "cm":
+                    return ((Integer.parseInt(m.group(1)) >= 150) && ((Integer.parseInt(m.group(1)) <= 193)));
+                case "in":
+                    return ((Integer.parseInt(m.group(1)) >= 59) && ((Integer.parseInt(m.group(1)) <= 76)));
+                default:
+                    // should be unreachable
+                    throw new IllegalArgumentException("Bad Height recieved " + height);
             }
-            input = input + " " + line;
         }
-        reader.close();
-        passportAttributes.add(input.trim()); // add last passport for end of file
+    }
+
+    public static void main(String[] args) throws IOException {
+
+        String allPassportsInput = Files.readString(Path.of(INPUT_FILE));
+        ArrayList<String> passportAttributes = new ArrayList<>(Arrays.asList(allPassportsInput.split("\n\n")));
+        ArrayList<HashMap<String, String>> passports = new ArrayList<>();
 
         int validPassportsPt1 = 0;
+        int validPassportsPt2 = 0;
         for (String string : passportAttributes) {
             // parse each attribute group into a HashMap
+            string = string.replaceAll("\n", " ");
             String[] attributes = string.split(" ");
 
             HashMap<String, String> passport = new HashMap<>();
@@ -47,15 +57,33 @@ class Solution {
 
             passports.add(passport);
 
-            if(passport.size() == 8) {
-                validPassports++;
+            // slight hack to check passport validity pt1 - should really validate each
+            // field
+            if (passport.size() == 8) {
+                validPassportsPt1++;
             } else if (passport.size() == 7 && !passport.containsKey("cid")) {
-                validPassports++;
+                validPassportsPt1++;
+            } else {
+                // no need to check for part 2 validation
+                continue;
+            }
+
+            // Part Two Validation rules
+            if ((Integer.parseInt(passport.get("byr")) >= 1920) && (Integer.parseInt(passport.get("byr")) <= 2002)
+                    && (Integer.parseInt(passport.get("iyr")) >= 2010)
+                    && (Integer.parseInt(passport.get("iyr")) <= 2020)
+                    && (Integer.parseInt(passport.get("eyr")) >= 2020)
+                    && (Integer.parseInt(passport.get("eyr")) <= 2030) && isValidHeight(passport.get("hgt"))
+                    && validEyeColours.contains(passport.get("ecl"))
+                    && validHairFormat.matcher(passport.get("hcl")).matches()
+                    && validPassportID.matcher(passport.get("pid")).matches()) {
+                validPassportsPt2++;
             }
 
         }
 
         System.err.println("Got " + passports.size() + " passports from " + INPUT_FILE);
-        System.err.println("There were " + validPassports + " valid passports.");
+        System.err.println("Part One | There were " + validPassportsPt1 + " valid passports.");
+        System.err.println("Part Two | There were " + validPassportsPt2 + " valid passports.");
     }
 }
