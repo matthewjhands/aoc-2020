@@ -71,11 +71,10 @@ class Solution {
             }
 
             ArrayList<Instruction> patchedInstructions = (ArrayList<Instruction>) instructions.clone();
-            int badInstIndex = patchedInstructions.indexOf(badInstruction);
 
             String newOpComponent = (badInstruction.opComponent.equals("jmp")) ? "nop" : "jmp";
             Instruction replacementInstruction = new Instruction(newOpComponent, badInstruction.numberComponent, badInstruction.index);
-            patchedInstructions.set(badInstIndex, replacementInstruction);
+            patchedInstructions.set(replacementInstruction.index, replacementInstruction);
 
             ProcessingResult result = processInstructions(patchedInstructions);
 
