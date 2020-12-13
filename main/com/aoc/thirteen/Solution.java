@@ -1,4 +1,4 @@
-package main.com.aoc.eleven;
+package main.com.aoc.thirteen;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 class Solution {
 
     public static void main(String[] args) throws IOException {
-        final String INPUT_FILE = "main/com/aoc/eleven/input.txt";
+        final String INPUT_FILE = "main/com/aoc/thirteen/input.txt";
 
         String input = Files.readString(Path.of(INPUT_FILE));
         ArrayList<String> lines = new ArrayList<>(Arrays.asList(input.split("\n")));
