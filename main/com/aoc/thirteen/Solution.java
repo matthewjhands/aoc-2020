@@ -43,5 +43,39 @@ class Solution {
 
         System.err.println("Part One | Answer is: "+busID*waitTime);
 
+        // Part Two
+        ArrayList<ArrayList<String>> schedulesPt2 = new ArrayList<>();
+        schedulesPt2.add(new ArrayList<>(Arrays.stream(lines.get(1).split(",")).collect(Collectors.toList())));
+
+        // find the max bus ID - we'll iterate around it's timetable to reduce overall number of iterations.
+        int maxBusID = schedules.get(1).stream().max((i, j) -> i.compareTo(j)).get();
+        int maxBusIDIndex = schedulesPt2.get(0).indexOf(String.valueOf(maxBusID));
+
+        long multiplierPt2 = 0;
+        long tTime = 0;
+        boolean solutionFound;
+        do {
+            multiplierPt2++;
+            solutionFound = true;
+            // ArrayList<String> newTimes = new ArrayList<>(schedulesPt2.get(0).size());
+            tTime = (maxBusID*multiplierPt2) - maxBusIDIndex;
+
+            for (int i = 0; i < schedulesPt2.get(0).size(); i++) {
+                String el = schedulesPt2.get(0).get(i);
+                if(el.equals("x")) {
+                    continue;
+                } else if ((tTime + i) % Integer.parseInt(el) > 0) {
+                    solutionFound = false;
+                    break;
+                }
+            }
+        } while (!solutionFound);
+
+        // Uh-oh! My tTime has got to 59684871347196 and it's well and truly time for bed..
+        // Something tells me I need to find a more efficient way to do this..
+        // TO BE CONTINUED.
+
+        System.err.println("Part Two | Answer is: "+ tTime);
+
     }
 }
