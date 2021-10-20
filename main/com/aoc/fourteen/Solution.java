@@ -64,7 +64,6 @@ class Solution {
             throw new InvalidParameterException("Binary String and Mask lengths not equal!");
         }
 
-        // binaryMask = "100000000000000000000000000000000XXX";
         char[] result = new char[MASK_WIDTH];
         for (int i = 0; i < MASK_WIDTH; i++) {
             result[i] = (binaryMask.charAt(i) == 'X') ? inputBinary.charAt(i) : binaryMask.charAt(i);
@@ -88,24 +87,19 @@ class Solution {
             String[] parts = line.split(" ");
             if(parts[0].startsWith("mask")){
                 currentMask = parts[2];
-                // System.err.println(currentMask);
             } else {
                 Matcher match = addressRegex.matcher(parts[0]);
                 match.find();
-                parts[2] = "8";
-                // mem.put(Integer.parseInt(match.group()), .parseInt(parts[2]));
                 String binaryRepresentation = Long.toBinaryString(Long.parseLong(parts[2]));
                 binaryRepresentation = padLeftZero(binaryRepresentation, MASK_WIDTH);
                 binaryRepresentation = applyBitmask(binaryRepresentation, currentMask);
                 mem.put(Integer.parseInt(match.group()), Long.parseLong(binaryRepresentation, 2));
-                for (Integer key : mem.keySet()) {
-                    sumTotal += mem.get(key);
-                }
-                // sumTotal += Long.parseLong(binaryRepresentation, 2);
-                // sumTotal += convertBinaryToDecimal(Long.parseLong(binaryRepresentation));
             }
         }
-
+        
+        for (Integer key : mem.keySet()) {
+            sumTotal += mem.get(key);
+        }
         System.err.printf("Part One | Answer is: %d", sumTotal);
     }
 }
