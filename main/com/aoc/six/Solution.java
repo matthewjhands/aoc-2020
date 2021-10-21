@@ -5,11 +5,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 class Solution {
@@ -35,6 +35,32 @@ class Solution {
             sumOfdistinctQuestions += distinctQuestions.size();
         }
 
-        System.err.printf("Part One | There were %d distinct questions.", sumOfdistinctQuestions);
+        System.err.printf("Part One | There were %d questions answered by any one member of a given group.", sumOfdistinctQuestions);
+
+        int allGroupMembersQuestionCount = 0;
+        for (String group : groups){
+            ArrayList<String> lines = new ArrayList<>(Arrays.asList(group.split("\n")));
+
+            HashMap<String, Integer> questionCount = new HashMap<>();
+
+            lines.forEach(line -> {
+                Matcher matches = questionRegex.matcher(line);
+                matches.results() // stream MatchResults (the matches)
+                .map(MatchResult::group) // get the actual character match
+                .sorted() // sort them, required to get distinct
+                .distinct() // get rid of dupes
+                .forEach(question -> {
+                    questionCount.compute(question, (k, v) -> (v == null) ? 1 : v+1);
+                });
+            });
+
+            for(String key : questionCount.keySet()) {
+                if (questionCount.get(key) == lines.size()) {
+                    allGroupMembersQuestionCount++;
+                }
+            }
+        }
+
+        System.err.printf("\nPart Two | There were %d questions answered by every member of a given group.", allGroupMembersQuestionCount);
     }
 }
