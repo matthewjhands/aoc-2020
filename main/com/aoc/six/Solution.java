@@ -44,17 +44,21 @@ class Solution {
             HashMap<String, Integer> questionCount = new HashMap<>();
 
             lines.forEach(line -> {
+                // for every line (person) in the group
                 Matcher matches = questionRegex.matcher(line);
                 matches.results() // stream MatchResults (the matches)
                 .map(MatchResult::group) // get the actual character match
                 .sorted() // sort them, required to get distinct
                 .distinct() // get rid of dupes
                 .forEach(question -> {
+                    // count or increment that question letter for that person in the group
                     questionCount.compute(question, (k, v) -> (v == null) ? 1 : v+1);
                 });
             });
 
             for(String key : questionCount.keySet()) {
+                // increment the counter where the question count 
+                //  is equal to the number of members in group
                 if (questionCount.get(key) == lines.size()) {
                     allGroupMembersQuestionCount++;
                 }
