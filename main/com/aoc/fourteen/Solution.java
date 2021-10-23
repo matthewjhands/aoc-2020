@@ -36,7 +36,7 @@ class Solution {
         return String.valueOf(result);
     }
 
-    private static String[] applyBitmaskPartTwo(String[] binaryStrings, String mask){
+    private static ArrayList<String> applyBitmaskPartTwo(ArrayList<String> binaryStrings, String mask){
         if (!mask.contains("X") && !mask.contains("1")) {
             // no more floating points or 1's - nothing else to do.
             return binaryStrings;
@@ -44,14 +44,14 @@ class Solution {
 
         if (mask.contains("1")) {
             // process all the 1's ASAP - then update the mask to avoid re-processing
-            for (int i = 0; i < binaryStrings.length; i++) {
+            for (int i = 0; i < binaryStrings.size(); i++) {
                 // for every binary string - should just be 1 
                 char[] result = new char[MASK_WIDTH];
                 for (int j = 0; j < MASK_WIDTH; j++) {
                     // for every char in string, if char at same index in mask is 1, replace with 1
-                    result[j] = (mask.charAt(j) == '1') ? '1' : binaryStrings[i].charAt(j);
+                    result[j] = (mask.charAt(j) == '1') ? '1' : binaryStrings.get(i).charAt(j);
                 }
-                binaryStrings[i] = String.valueOf(result);
+                binaryStrings.set(i, String.valueOf(result));
             }
             // disable any further processing of 1's
             mask = mask.replace("1", "0");
@@ -63,16 +63,16 @@ class Solution {
         int xIndex = mask.indexOf("X");
 
         ArrayList<String> newBinaryStrings = new ArrayList<>();
-        for (int i = 0; i < binaryStrings.length; i++) {
+        for (int i = 0; i < binaryStrings.size(); i++) {
             // for every binary string
             
             // copy the string, replacing the char at xIndex with 0, then save it
-            StringBuilder xAsZeroBinary = new StringBuilder(binaryStrings[i]);
+            StringBuilder xAsZeroBinary = new StringBuilder(binaryStrings.get(i));
             xAsZeroBinary.replace(xIndex, xIndex+1, "0");
             newBinaryStrings.add(xAsZeroBinary.toString());
 
             // the same as above but replacing char with 1
-            StringBuilder xAsOneBinary = new StringBuilder(binaryStrings[i]);
+            StringBuilder xAsOneBinary = new StringBuilder(binaryStrings.get(i));
             xAsOneBinary.replace(xIndex, xIndex+1, "1");
             newBinaryStrings.add(xAsOneBinary.toString());
         }
@@ -82,9 +82,7 @@ class Solution {
         mask = maskSB.toString();
 
         // then call this method again with updated mask and binaryStrings
-        String[] arr = new String[newBinaryStrings.size()];
-        arr = newBinaryStrings.toArray(arr);
-        return applyBitmaskPartTwo(arr, mask);
+        return applyBitmaskPartTwo(newBinaryStrings, mask);
 
     }
 
@@ -131,10 +129,9 @@ class Solution {
                 String binaryRepresentation = Long.toBinaryString(Long.parseLong(match.group()));
                 binaryRepresentation = padLeftZero(binaryRepresentation, MASK_WIDTH);
 
-                // stick binaryAddress in a String[] and work out all possible address permutations
-                String[] initialBinaryStrings = new String[1];
-                initialBinaryStrings[0] = binaryRepresentation;
-                String[] binaryStrings = applyBitmaskPartTwo(initialBinaryStrings, currentMask);
+                // stick binaryAddress in an array and work out all possible address permutations
+                ArrayList<String> binaryStrings = new ArrayList<>(Arrays.asList(binaryRepresentation));
+                binaryStrings = applyBitmaskPartTwo(binaryStrings, currentMask);
 
                 // for each address permutation save the value (parts[2]) to memory
                 for(String binaryAddress : binaryStrings) {
