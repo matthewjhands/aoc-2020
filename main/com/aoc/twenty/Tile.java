@@ -12,7 +12,7 @@ public class Tile {
     public static final ArrayList<Character> DIRECTIONS = new ArrayList<>(Arrays.asList('N', 'E', 'S', 'W'));
     private static final ArrayList<Integer> ROTATIONS = new ArrayList<>(Arrays.asList(0, 90, 180, 270));
     private static HashMap<Character, Character> RECIPROCAL_DIRECTION = new HashMap<>();
-    RECIPROCAL_DIRECTION.put('N', 'S');
+    // RECIPROCAL_DIRECTION.put('N', 'S');
     private ArrayList<ArrayList<Character>> grid;
     private final Integer randomID;
     private HashMap<Character, Tile> neighbours = new HashMap<>(DIRECTIONS.size());
