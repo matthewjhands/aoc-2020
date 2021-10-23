@@ -1,7 +1,6 @@
 package main.com.aoc.fourteen;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.InvalidParameterException;
@@ -14,41 +13,6 @@ import java.util.regex.Pattern;
 class Solution {
 
     public final static int MASK_WIDTH = 36;
-
-    public static Integer convertDecimalToBinary(Integer decimalNumber) {
-        // https://www.baeldung.com/java-binary-numbers#1-decimal-to-a-binary-number
-
-        if (decimalNumber == 0) {
-            return decimalNumber;
-        }
-    
-        StringBuilder binaryNumber = new StringBuilder();
-        Integer quotient = decimalNumber;
-    
-        while (quotient > 0) {
-            int remainder = quotient % 2;
-            binaryNumber.append(remainder);
-            quotient /= 2;
-        }
-    
-        binaryNumber = binaryNumber.reverse();
-        return Integer.valueOf(binaryNumber.toString());
-    }
-
-    public static Integer convertBinaryToDecimal(Integer binaryNumber) {
-        // https://www.baeldung.com/java-binary-numbers#2-binary-to-a-decimal-number
-
-        Integer decimalNumber = 0;
-        Integer base = 1;
-    
-        while (binaryNumber > 0) {
-            int lastDigit = binaryNumber % 10;
-            binaryNumber = binaryNumber / 10;
-            decimalNumber += lastDigit * base;
-            base = base * 2;
-        }
-        return decimalNumber;
-    }
 
     public static String padLeftZero(String inputString, int stringLength){
         // https://www.baeldung.com/java-pad-string#2-using-substring
@@ -83,12 +47,9 @@ class Solution {
             for (int i = 0; i < binaryStrings.length; i++) {
                 // for every binary string - should just be 1 
                 char[] result = new char[MASK_WIDTH];
-                char[] maskCA = mask.toCharArray();
-                char[] stringCA = binaryStrings[i].toCharArray();
-
                 for (int j = 0; j < MASK_WIDTH; j++) {
-                    // for every char in string, if same char in mask is 1, replace with 1
-                    result[j] = (maskCA[j] == '1') ? '1' : stringCA[j];
+                    // for every char in string, if char at same index in mask is 1, replace with 1
+                    result[j] = (mask.charAt(j) == '1') ? '1' : binaryStrings[i].charAt(j);
                 }
                 binaryStrings[i] = String.valueOf(result);
             }
@@ -98,7 +59,7 @@ class Solution {
 
         // process X's 
 
-        // identify the first X at from L to R in mask, record index
+        // identify the first X from L to R in mask, record index
         int xIndex = mask.indexOf("X");
 
         ArrayList<String> newBinaryStrings = new ArrayList<>();
@@ -107,17 +68,17 @@ class Solution {
             
             // copy the string, replacing the char at xIndex with 0, then save it
             StringBuilder xAsZeroBinary = new StringBuilder(binaryStrings[i]);
-            xAsZeroBinary = xAsZeroBinary.replace(xIndex, xIndex+1, "0");
+            xAsZeroBinary.replace(xIndex, xIndex+1, "0");
             newBinaryStrings.add(xAsZeroBinary.toString());
 
             // the same as above but replacing char with 1
             StringBuilder xAsOneBinary = new StringBuilder(binaryStrings[i]);
-            xAsOneBinary = xAsOneBinary.replace(xIndex, xIndex+1, "1");
+            xAsOneBinary.replace(xIndex, xIndex+1, "1");
             newBinaryStrings.add(xAsOneBinary.toString());
         }
         // replace this X so that we don't reprocess it
         StringBuilder maskSB = new StringBuilder(mask);
-        maskSB = maskSB.replace(xIndex, xIndex+1, "0");
+        maskSB.replace(xIndex, xIndex+1, "0");
         mask = maskSB.toString();
 
         // then call this method again with updated mask and binaryStrings
@@ -162,14 +123,20 @@ class Solution {
             if(parts[0].startsWith("mask")){
                 currentMask = parts[2];
             } else {
+                // get the address
                 Matcher match = addressRegex.matcher(parts[0]);
                 match.find();
+
+                // convert to binary, pad to MASK_WIDTH
                 String binaryRepresentation = Long.toBinaryString(Long.parseLong(match.group()));
                 binaryRepresentation = padLeftZero(binaryRepresentation, MASK_WIDTH);
+
+                // stick binaryAddress in a String[] and work out all possible address permutations
                 String[] initialBinaryStrings = new String[1];
                 initialBinaryStrings[0] = binaryRepresentation;
                 String[] binaryStrings = applyBitmaskPartTwo(initialBinaryStrings, currentMask);
 
+                // for each address permutation save the value (parts[2]) to memory
                 for(String binaryAddress : binaryStrings) {
                     Long longAddress = Long.parseLong(binaryAddress, 2);
                     mem.put(longAddress, Long.parseLong(parts[2]));
@@ -177,6 +144,7 @@ class Solution {
             }
         }
         
+        // finally, calculate the sum of the value of every address in memory
         for (Long key : mem.keySet()) {
             sumTotal += mem.get(key);
         }
