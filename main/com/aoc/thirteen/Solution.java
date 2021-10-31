@@ -106,43 +106,49 @@ class Solution {
 
         System.err.println("Part One | Answer is: "+busID*waitTime);
 
-        /*
-
         // Part Two
-        ArrayList<ArrayList<String>> schedulesPt2 = new ArrayList<>();
-        schedulesPt2.add(new ArrayList<>(Arrays.stream(lines.get(1).split(",")).collect(Collectors.toList())));
+        ArrayList<String> schedulesPt2 = new ArrayList<>();
+        //schedulesPt2.addAll(Arrays.asList(lines.get(1).split(",")));
+        schedulesPt2.addAll(Arrays.asList("17,x,13,19".split(",")));
 
         // find the max bus ID - we'll iterate around it's timetable to reduce overall number of iterations.
-        int maxBusID = schedules.get(1).stream().max((i, j) -> i.compareTo(j)).get();
-        int maxBusIDIndex = schedulesPt2.get(0).indexOf(String.valueOf(maxBusID));
+        String maxBusIDS = schedulesPt2.stream().filter((el) -> !String.valueOf(el).equals("x")).max((i, j) -> i.compareTo(j)).get();
+        int maxBusID = Integer.parseInt(maxBusIDS);
+        int maxBusIDIndex = schedulesPt2.indexOf(String.valueOf(maxBusID));
 
-        long minTTime = 100000000000000L;
+        // long minTTime = 0L;
+        // long minTTime = 100000000000000L;
         //slightly cheeky hack - set the initial multiplier so that starting tTime >= 100000000000000, as hinted at in challenge
-        long multiplierPt2 = (long) Math.floor(minTTime / maxBusID); 
-        long tTime = 0;
+        long multiplierPt2 = 1L; 
+        // long multiplierPt2 = (long) Math.floor(minTTime / maxBusID);
+        long tTime = 0L;
         boolean solutionFound;
         do {
-            multiplierPt2++;
             solutionFound = true;
             // ArrayList<String> newTimes = new ArrayList<>(schedulesPt2.get(0).size());
             tTime = (maxBusID*multiplierPt2) - maxBusIDIndex;
+            // tTime = 3417L;
 
-            for (int i = 0; i < schedulesPt2.get(0).size(); i++) {
-                String el = schedulesPt2.get(0).get(i);
+            for (int i = 0; i < schedulesPt2.size(); i++) {
+                String el = schedulesPt2.get(i);
                 if(el.equals("x")) {
                     continue;
-                } else if ((tTime + i) % Integer.parseInt(el) > 0) {
+                }
+                long tTimePlusI = tTime + i;
+                long elInteger = Long.parseLong(el);
+                if ( tTimePlusI % elInteger > 0L) {
                     solutionFound = false;
                     break;
                 }
             }
+            multiplierPt2++;
         } while (!solutionFound);
 
         // Uh-oh! My tTime has got to 59684871347196 and it's well and truly time for bed..
         // Something tells me I need to find a more efficient way to do this..
-        // TO BE CONTINUED. */
+        // TO BE CONTINUED.
 
-        System.err.println("Part Two | Answer is: "+ part2Attempt3(lines.get(1)));
+        System.err.println("Part Two | Answer is: "+ tTime);
 
     }
 }
